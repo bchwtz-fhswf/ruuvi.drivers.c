@@ -4,6 +4,7 @@ var dir_ee3f1a7951c308657a65f8199076c1d6 =
     [ "adc", "dir_3e7c33b828a42d085ffdcca0d02ac2c2.html", "dir_3e7c33b828a42d085ffdcca0d02ac2c2" ],
     [ "atomic", "dir_ebffbb7ad2f2f6fbfbbae46419079952.html", "dir_ebffbb7ad2f2f6fbfbbae46419079952" ],
     [ "communication", "dir_2016479bd7cb546fd87fb6e3bcdb02c1.html", "dir_2016479bd7cb546fd87fb6e3bcdb02c1" ],
+    [ "crypto", "dir_4dfe5aea265fd3562b71ee04511a565e.html", "dir_4dfe5aea265fd3562b71ee04511a565e" ],
     [ "environmental", "dir_caad511291e761b90c8746e6928a565b.html", "dir_caad511291e761b90c8746e6928a565b" ],
     [ "flash", "dir_86c6b2d3037ad98df8843100e7fe4572.html", "dir_86c6b2d3037ad98df8843100e7fe4572" ],
     [ "gpio", "dir_f899a1228dabdc100152de2325a47997.html", "dir_f899a1228dabdc100152de2325a47997" ],

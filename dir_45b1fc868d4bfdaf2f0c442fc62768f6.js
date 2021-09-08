@@ -3,6 +3,7 @@ var dir_45b1fc868d4bfdaf2f0c442fc62768f6 =
     [ "adc", "dir_b075f1b43de013d6c205f38e229464b7.html", "dir_b075f1b43de013d6c205f38e229464b7" ],
     [ "atomic", "dir_5b362e08d2b07d780c22bf9427ba2317.html", "dir_5b362e08d2b07d780c22bf9427ba2317" ],
     [ "communication", "dir_b5b38734d51b61c80e59a2317fca54cd.html", "dir_b5b38734d51b61c80e59a2317fca54cd" ],
+    [ "crypto", "dir_36add2f8c6f108e7b5eca6fdd18a40e6.html", "dir_36add2f8c6f108e7b5eca6fdd18a40e6" ],
     [ "environmental", "dir_a3baa5931566b6430efa73e1cf24c0b7.html", "dir_a3baa5931566b6430efa73e1cf24c0b7" ],
     [ "flash", "dir_34361d7fd872064a8dfe26c19f834419.html", "dir_34361d7fd872064a8dfe26c19f834419" ],
     [ "gpio", "dir_3edbbb76d3fe2e3d3f0fcb62bcb3dd20.html", "dir_3edbbb76d3fe2e3d3f0fcb62bcb3dd20" ],

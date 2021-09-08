@@ -1,5 +1,6 @@
 var group__adc__tasks =
 [
+    [ "ruuvi_task_adc.c", "ruuvi__task__adc_8c.html", null ],
     [ "ruuvi_task_adc.h", "ruuvi__task__adc_8h.html", null ],
     [ "rt_adc_mode_t", "group__adc__tasks.html#ga5439776452b55b1c2fe7c86228513f6c", [
       [ "RATIOMETRIC", "group__adc__tasks.html#gga5439776452b55b1c2fe7c86228513f6cab7e95ded810bd44cd862c100fddacd5d", null ],

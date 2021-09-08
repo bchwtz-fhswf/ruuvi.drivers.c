@@ -29,6 +29,7 @@ var ruuvi__driver__error_8h =
     [ "RD_STATUS_MORE_AVAILABLE", "group___error.html#ga46ba64af58346cedd5d93fc283c86406", null ],
     [ "RD_SUCCESS", "group___error.html#gaa76220bc977ea62edf556efd7729eaf2", null ],
     [ "RD_UINT64_INVALID", "group___error.html#gae0e5361071e84357dbc63011c816a6d8", null ],
+    [ "RD_WARNING_DEPRECATED", "group___error.html#ga1a2edb6b612afaeb6fcefd618c3fc787", null ],
     [ "rd_error_cb", "group___error.html#ga4389a98d1ee4ebfd3b378cdef77d6e2b", null ],
     [ "rd_status_t", "group___error.html#ga3e1919cc1fe75cb7f12af047f6f4ce55", null ],
     [ "rd_error_cb_set", "group___error.html#ga0e7df1d029bb503b2f3574b5ab41e8db", null ],

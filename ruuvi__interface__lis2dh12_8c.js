@@ -1,11 +1,11 @@
 var ruuvi__interface__lis2dh12_8c =
 [
     [ "LOGD", "ruuvi__interface__lis2dh12_8c.html#a48bbf993b1b3c921f9576776376abd2b", null ],
-    [ "MOTION_THRESHOLD_MAX", "group___l_i_s2_d_h12.html#gaac1c4c7f762fdc4bd85fbf537b7d99d4", null ],
-    [ "NM_BIT_DIVEDER", "group___l_i_s2_d_h12.html#ga705715aa9f635e4b5bf61b291cdbf597", null ],
-    [ "NUM_AXIS", "group___l_i_s2_d_h12.html#gaca00080fdda943be54f1d91bbeded3f4", null ],
-    [ "PWRON_DELAY_MS", "group___l_i_s2_d_h12.html#ga0cd72a6b2ff3bea8cd3893bb5a978753", null ],
-    [ "VERIFY_SENSOR_SLEEPS", "group___l_i_s2_d_h12.html#ga97355e96c09fc9896da2a8dd1d95c9b4", null ],
+    [ "MOTION_THRESHOLD_MAX", "ruuvi__interface__lis2dh12_8c.html#aac1c4c7f762fdc4bd85fbf537b7d99d4", null ],
+    [ "NM_BIT_DIVEDER", "ruuvi__interface__lis2dh12_8c.html#a705715aa9f635e4b5bf61b291cdbf597", null ],
+    [ "NUM_AXIS", "ruuvi__interface__lis2dh12_8c.html#aca00080fdda943be54f1d91bbeded3f4", null ],
+    [ "PWRON_DELAY_MS", "ruuvi__interface__lis2dh12_8c.html#a0cd72a6b2ff3bea8cd3893bb5a978753", null ],
+    [ "VERIFY_SENSOR_SLEEPS", "ruuvi__interface__lis2dh12_8c.html#a97355e96c09fc9896da2a8dd1d95c9b4", null ],
     [ "ri_lis2dh12_activity_interrupt_use", "group___l_i_s2_d_h12.html#gaf3ab46ba61a33bb268d253f418ccc6b1", null ],
     [ "ri_lis2dh12_data_get", "group___l_i_s2_d_h12.html#gad06eef92774757fd4bfbbd20620e096a", null ],
     [ "ri_lis2dh12_dsp_get", "group___l_i_s2_d_h12.html#ga3e39fc54e7514124f181f7e93bec1979", null ],
