@@ -140,9 +140,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ad72621c85f6a80e1f3628b8d1e785ae8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___error.html#ga3e1919cc1fe75cb7f12af047f6f4ce55">rd_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ruuvi__interface__communication__ble__gatt_8h.html#ad72621c85f6a80e1f3628b8d1e785ae8">ri_gatt_dis_init</a> (const <a class="el" href="structri__comm__dis__init__t.html">ri_comm_dis_init_t</a> *const dis)</td></tr>
 <tr class="memdesc:ad72621c85f6a80e1f3628b8d1e785ae8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize BLE4 Device Information service.  <a href="ruuvi__interface__communication__ble__gatt_8h.html#ad72621c85f6a80e1f3628b8d1e785ae8">More...</a><br /></td></tr>
 <tr class="separator:ad72621c85f6a80e1f3628b8d1e785ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b6b14cc8bc2b95788252c3816429028"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___error.html#ga3e1919cc1fe75cb7f12af047f6f4ce55">rd_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ruuvi__interface__communication__ble__gatt_8h.html#a7b6b14cc8bc2b95788252c3816429028">ri_gatt_params_request</a> (const <a class="el" href="ruuvi__interface__communication_8h.html#a12627eb4361834a0632ad1a940bfac03">ri_gatt_params_t</a> params)</td></tr>
-<tr class="memdesc:a7b6b14cc8bc2b95788252c3816429028"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request connection parameter update for current connection.  <a href="ruuvi__interface__communication__ble__gatt_8h.html#a7b6b14cc8bc2b95788252c3816429028">More...</a><br /></td></tr>
-<tr class="separator:a7b6b14cc8bc2b95788252c3816429028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9560cb15786a31823a5c1dbd6d3c7873"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___error.html#ga3e1919cc1fe75cb7f12af047f6f4ce55">rd_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ruuvi__interface__communication__ble__gatt_8h.html#a9560cb15786a31823a5c1dbd6d3c7873">ri_gatt_params_request</a> (const <a class="el" href="ruuvi__interface__communication_8h.html#a12627eb4361834a0632ad1a940bfac03">ri_gatt_params_t</a> params, const uint16_t delay_ms)</td></tr>
+<tr class="memdesc:a9560cb15786a31823a5c1dbd6d3c7873"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request connection parameter update for current connection.  <a href="ruuvi__interface__communication__ble__gatt_8h.html#a9560cb15786a31823a5c1dbd6d3c7873">More...</a><br /></td></tr>
+<tr class="separator:a9560cb15786a31823a5c1dbd6d3c7873"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a6157a8601370d03c89353e5e3542c6e3"></a>
@@ -441,8 +441,8 @@ error code from stack in case there is other error. </dd></dl>
 
 </div>
 </div>
-<a id="a7b6b14cc8bc2b95788252c3816429028"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b6b14cc8bc2b95788252c3816429028">&#9670;&nbsp;</a></span>ri_gatt_params_request()</h2>
+<a id="a9560cb15786a31823a5c1dbd6d3c7873"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9560cb15786a31823a5c1dbd6d3c7873">&#9670;&nbsp;</a></span>ri_gatt_params_request()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -451,16 +451,28 @@ error code from stack in case there is other error. </dd></dl>
           <td class="memname"><a class="el" href="group___error.html#ga3e1919cc1fe75cb7f12af047f6f4ce55">rd_status_t</a> ri_gatt_params_request </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="ruuvi__interface__communication_8h.html#a12627eb4361834a0632ad1a940bfac03">ri_gatt_params_t</a>&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>delay_ms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Request connection parameter update for current connection. </p>
+<p>This function will automatically retry connection parameter update up to 2 times and disconnects connection on failure. Takes no effect if there is no current connection.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">params</td><td>One of preset defaults: RI_GATT_TURBO, RI_GATT_STANDARD, RI_GATT_LOW_POWER. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">delay_ms</td><td>Delay before trying to update for first time. 0 For immediate update, at least 100 ms otherwise. </td></tr>
   </table>
   </dd>
 </dl>

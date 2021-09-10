@@ -343,7 +343,7 @@ var searchData=
   ['ri_5fgatt_5fmin_5finterval_5fturbo_5fms_1872',['RI_GATT_MIN_INTERVAL_TURBO_MS',['../ruuvi__interface__communication__ble__gatt_8h.html#a0d204c4d145beb65106d9b5224584cec',1,'ruuvi_interface_communication_ble_gatt.h']]],
   ['ri_5fgatt_5fnus_5finit_1873',['ri_gatt_nus_init',['../ruuvi__interface__communication__ble__gatt_8h.html#a64c11bcfdf09d8c79b9ba2d9fbe6e85e',1,'ruuvi_interface_communication_ble_gatt.h']]],
   ['ri_5fgatt_5fnus_5funinit_1874',['ri_gatt_nus_uninit',['../ruuvi__interface__communication__ble__gatt_8h.html#a1da7208a7059853b601733ba62cbc4d7',1,'ruuvi_interface_communication_ble_gatt.h']]],
-  ['ri_5fgatt_5fparams_5frequest_1875',['ri_gatt_params_request',['../ruuvi__interface__communication__ble__gatt_8h.html#a7b6b14cc8bc2b95788252c3816429028',1,'ruuvi_interface_communication_ble_gatt.h']]],
+  ['ri_5fgatt_5fparams_5frequest_1875',['ri_gatt_params_request',['../ruuvi__interface__communication__ble__gatt_8h.html#a9560cb15786a31823a5c1dbd6d3c7873',1,'ruuvi_interface_communication_ble_gatt.h']]],
   ['ri_5fgatt_5fparams_5ft_1876',['ri_gatt_params_t',['../ruuvi__interface__communication_8h.html#a12627eb4361834a0632ad1a940bfac03',1,'ruuvi_interface_communication.h']]],
   ['ri_5fgatt_5fslave_5flatency_5flow_5fpower_1877',['RI_GATT_SLAVE_LATENCY_LOW_POWER',['../ruuvi__interface__communication__ble__gatt_8h.html#a3bf9c8a7e009fc7a95968f75e2ff79b2',1,'ruuvi_interface_communication_ble_gatt.h']]],
   ['ri_5fgatt_5fslave_5flatency_5fstandard_1878',['RI_GATT_SLAVE_LATENCY_STANDARD',['../ruuvi__interface__communication__ble__gatt_8h.html#a0dd9fe3fc20ceef3179482c341f931a9',1,'ruuvi_interface_communication_ble_gatt.h']]],
