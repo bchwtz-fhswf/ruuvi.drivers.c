@@ -59,13 +59,6 @@
           if(RD_SENSOR_CFG_SLEEP != MACRO_MODE) { return RD_ERROR_INVALID_STATE; } \
           } while(0)
 
-/** @brief Representation of 3*2 bytes buffer as 3*int16_t */
-typedef union
-{
-    int16_t i16bit[NUM_AXIS]; //!< Integer values
-    uint8_t u8bit[2 * NUM_AXIS];  //!< Buffer
-} axis3bit16_t;
-
 /** @brief Representation of 2 bytes buffer as int16_t */
 typedef union
 {
@@ -954,25 +947,74 @@ static rd_status_t rawToMg (const axis3bit16_t * raw_acceleration,
     return err_code;
 }
 
+/**
+ * @brief Test if FIFO is active
+ *
+ * @return RD_SUCCESS when FIFO is active
+ * @return RD_ERROR_INVALID_STATE when FIFO is not active
+ * @return RD_ERROR_INTERNAL in case of error
+ */
+rd_status_t ri_lis2dh12_fifo_active (void) {
+    int32_t lis_ret_code;
+    uint8_t enable;
+    lis_ret_code = lis2dh12_fifo_get (& (dev.ctx), &enable);
+    if(LIS_SUCCESS == lis_ret_code) {
+        if(enable) {
+            return RD_SUCCESS;
+        } else {
+            return RD_ERROR_INVALID_STATE;
+        }
+    } else {
+        return RD_ERROR_INTERNAL;
+    }
+}
+
+rd_status_t ri_lis2dh12_acceleration_raw_get (uint8_t * const raw_data)
+{
+    int32_t lis_ret_code;
+    lis_ret_code = lis2dh12_acceleration_raw_get (& (dev.ctx), raw_data);
+
+    return (LIS_SUCCESS == lis_ret_code) ? RD_SUCCESS : RD_ERROR_INTERNAL;
+}
+
+rd_status_t ri_lis2dh12_temperature_raw_get(uint8_t * const raw_temperature) 
+{
+    int32_t lis_ret_code;
+    lis_ret_code = lis2dh12_temperature_raw_get (& (dev.ctx), raw_temperature);
+    return (LIS_SUCCESS == lis_ret_code) ? RD_SUCCESS : RD_ERROR_INTERNAL;
+}
+
 rd_status_t ri_lis2dh12_data_get (rd_sensor_data_t * const
                                   data)
 {
     if (NULL == data) { return RD_ERROR_NULL; }
 
     rd_status_t err_code = RD_SUCCESS;
-    int32_t lis_ret_code;
     axis3bit16_t raw_acceleration;
     uint8_t raw_temperature[2];
     memset (raw_acceleration.u8bit, 0x00, 3 * sizeof (int16_t));
-    lis_ret_code = lis2dh12_acceleration_raw_get (& (dev.ctx), raw_acceleration.u8bit);
-    err_code |= (LIS_SUCCESS == lis_ret_code) ? RD_SUCCESS : RD_ERROR_INTERNAL;
-    lis_ret_code = lis2dh12_temperature_raw_get (& (dev.ctx), raw_temperature);
-    err_code |= (LIS_SUCCESS == lis_ret_code) ? RD_SUCCESS : RD_ERROR_INTERNAL;
+    err_code |= ri_lis2dh12_acceleration_raw_get(raw_acceleration.u8bit);
+    err_code |= ri_lis2dh12_temperature_raw_get(raw_temperature);
+    err_code |= ri_lis2dh12_raw_data_parse(data, &raw_acceleration, raw_temperature);
+
+    return err_code;
+}
+
+
+rd_status_t ri_lis2dh12_raw_data_parse (rd_sensor_data_t * const data, 
+            axis3bit16_t *raw_acceleration, uint8_t *raw_temperature)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
     // Compensate data with resolution, scale
     float acceleration[3];
-    float temperature;
-    err_code |= rawToMg (&raw_acceleration, acceleration);
-    err_code |= rawToC (raw_temperature, &temperature);
+    float temperature = RD_FLOAT_INVALID;
+    err_code |= rawToMg (raw_acceleration, acceleration);
+
+    if(raw_temperature!=NULL) {
+        err_code |= rawToC (raw_temperature, &temperature);
+    }
+
     uint8_t mode;
     err_code |= ri_lis2dh12_mode_get (&mode);
 
@@ -994,12 +1036,17 @@ rd_status_t ri_lis2dh12_data_get (rd_sensor_data_t * const
         acc_fields.datas.acceleration_x_g = 1;
         acc_fields.datas.acceleration_y_g = 1;
         acc_fields.datas.acceleration_z_g = 1;
-        acc_fields.datas.temperature_c = 1;
+        
         //Convert mG to G.
         values[0] = acceleration[0] / 1000.0;
         values[1] = acceleration[1] / 1000.0;
         values[2] = acceleration[2] / 1000.0;
-        values[3] = temperature;
+
+        if(raw_temperature!=NULL) {
+            acc_fields.datas.temperature_c = 1;
+            values[3] = temperature;
+        }
+
         d_acceleration.valid  = acc_fields;
         d_acceleration.fields = acc_fields;
         rd_sensor_data_populate (data,
@@ -1034,7 +1081,11 @@ rd_status_t ri_lis2dh12_fifo_read (size_t * num_elements,
     if (NULL == num_elements || NULL == p_data) { return RD_ERROR_NULL; }
 
     uint8_t elements = 0;
-    rd_status_t err_code = RD_SUCCESS;
+    rd_status_t err_code = ri_lis2dh12_fifo_active();
+    if(err_code!=RD_SUCCESS) {
+        return err_code;
+    }
+
     int32_t lis_ret_code;
     lis_ret_code = lis2dh12_fifo_data_level_get (& (dev.ctx), &elements);
     err_code |= (LIS_SUCCESS == lis_ret_code) ? RD_SUCCESS : RD_ERROR_INTERNAL;

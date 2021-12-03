@@ -57,6 +57,7 @@
 #include "ruuvi_interface_timer.h"
 #include "ruuvi_interface_power.h"
 #include "ruuvi_interface_yield.h"
+#include "../../../../buildnum.h"
 
 #include "app_timer.h"
 #include "ble_advdata.h"
@@ -231,6 +232,7 @@ static ret_code_t conn_params_init (void)
     cp_init.disconnect_on_fail             = false;
     cp_init.evt_handler                    = on_conn_params_evt;
     cp_init.error_handler                  = conn_params_error_handler;
+    ble_conn_params_stop(); // added to solve issue 230
     err_code = ble_conn_params_init (&cp_init);
     return err_code;
 }
@@ -363,15 +365,7 @@ static void ble_evt_handler (ble_evt_t const * p_ble_evt, void * p_context)
                                                     BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP,
                                                     NULL, NULL);
             RD_ERROR_CHECK (ruuvi_nrf5_sdk15_to_ruuvi_error (err_code),
-                            ~RD_SUCCESS);
-
-            if (NRF_ERROR_INVALID_STATE == err_code)
-            {
-                err_code = sd_ble_gap_disconnect (p_ble_evt->evt.gattc_evt.conn_handle,
-                                                  BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-                LOG ("BLE GATT Disconnected\r\n");
-            }
-
+                            RD_SUCCESS);
             break;
 
         case BLE_GATTS_EVT_SYS_ATTR_MISSING:
