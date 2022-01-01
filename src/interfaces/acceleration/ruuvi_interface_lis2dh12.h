@@ -187,6 +187,15 @@ rd_status_t ri_lis2dh12_raw_data_parse (rd_sensor_data_t * const data,
             axis3bit16_t *raw_acceleration, uint8_t *raw_temperature);
 
 
+            /**
+ * Convert raw value to acceleration in mg
+ *
+ * parameter raw: Input. Raw values from LIS2DH12
+ * parameter acceleration: Output. Acceleration values in mg
+ *
+ */
+rd_status_t rawToMg (const axis3bit16_t * raw_acceleration, float * acceleration);
+
 /** @brief context for LIS2DH12 */
 typedef struct
 {

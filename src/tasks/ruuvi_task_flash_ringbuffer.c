@@ -13,7 +13,6 @@
 #include "ruuvi_task_flash.h"
 #include "ruuvi_task_flash_ringbuffer.h"
 #include "ruuvi_task_flashdb.h"
-#include "fds.h"
 #include <string.h>
 
 
@@ -53,6 +52,8 @@ static struct fdb_tsdb tsdb;
 
 rd_status_t rt_flash_ringbuffer_create (const char *partition, fdb_get_time get_time, const bool format_db)
 {
+  LOGD("Start initializing Ringbuffer (this may take some minutes).\r\n");
+
   // change to high performance mode during flashDB initialization for quicker setup
   rt_macronix_high_performance_switch(true);
 
@@ -60,14 +61,6 @@ rd_status_t rt_flash_ringbuffer_create (const char *partition, fdb_get_time get_
    */
   memset(&tsdb, 0, sizeof(tsdb));
   fdb_err_t result = fdb_tsdb_init(&tsdb, "acceleration_data", partition, get_time, 144, NULL);
-
-  // Log result
-  if (result==FDB_NO_ERR) {
-      LOGD("Ringbuffer successfully initilized.\r\n");
-  } else {
-      LOGDf("Ringbuffer initialization error 0x%02X \r\n", result);
-  }
-  
 
   // Format DB in case of enabling logging and DB was not empty
   if(format_db && tsdb.last_time!=0) {
@@ -77,6 +70,13 @@ rd_status_t rt_flash_ringbuffer_create (const char *partition, fdb_get_time get_
   // change to low power mode after flashDB initialization for quicker setup
   rt_macronix_high_performance_switch(false);
 
+  // Log result
+  if (result==FDB_NO_ERR) {
+      LOGD("Ringbuffer successfully initilized.\r\n");
+  } else {
+      LOGDf("Ringbuffer initialization error 0x%02X \r\n", result);
+  }
+  
   return rt_flashdb_to_ruuvi_error(result);
 }
 
@@ -126,28 +126,6 @@ rd_status_t rt_flash_ringbuffer_drop (void) {
 rd_status_t rt_flash_ringbuffer_statistic (uint8_t* const statistik) {
 
   rd_status_t err_code = RD_SUCCESS;
-  int pos = 0;
-
-  statistik[pos++] = 0xff;
-  statistik[pos++] = 0xff;
-  statistik[pos++] = 0xff;
-      
-  // gather flash statistics
-  fds_stat_t stat;
-  fds_stat(&stat);
-
-  memcpy(statistik+pos, &stat.valid_records, 2);
-  pos+=2;
-  memcpy(statistik+pos, &stat.dirty_records, 2);
-  pos+=2;
-  memcpy(statistik+pos, &stat.words_reserved, 2);
-  pos+=2;
-  memcpy(statistik+pos, &stat.words_used, 2);
-  pos+=2;
-  memcpy(statistik+pos, &stat.largest_contig, 2);
-  pos+=2;
-  memcpy(statistik+pos, &stat.freeable_words, 2);
-  pos+=2;
   
   return err_code;
 }

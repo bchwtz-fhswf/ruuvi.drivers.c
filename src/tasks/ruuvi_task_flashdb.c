@@ -7,6 +7,7 @@
 
 #include "ruuvi_task_flashdb.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_yield.h"
 #include "macronix_flash.h"
 
 #if RI_LOG_ENABLED

@@ -6,6 +6,7 @@
 #include "ruuvi_task_flash.h"
 #include "ruuvi_task_sensor.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #ifndef TASK_SENSOR_LOG_LEVEL
@@ -79,13 +80,11 @@ rd_status_t rt_sensor_store (rt_sensor_ctx_t * const sensor)
     {
         err_code |= RD_ERROR_NULL;
     }
-    else if (rt_flash_busy())
-    {
-        err_code |= RD_ERROR_BUSY;
-    }
     else
     {
-        err_code |= rt_flash_store (sensor->nvm_file, sensor->nvm_record,
+        char key[64];
+        snprintf(key, sizeof(key), "%s_config", sensor->sensor.name);
+        err_code |= rt_flash_store (key,
                                     & (sensor->configuration),
                                     sizeof (sensor->configuration));
     }
@@ -109,13 +108,11 @@ rd_status_t rt_sensor_load (rt_sensor_ctx_t * const sensor)
     {
         err_code |= RD_ERROR_NULL;
     }
-    else if (rt_flash_busy())
-    {
-        err_code |= RD_ERROR_BUSY;
-    }
     else
     {
-        err_code |= rt_flash_load (sensor->nvm_file, sensor->nvm_record,
+        char key[64];
+        snprintf(key, sizeof(key), "%s_config", sensor->sensor.name);
+        err_code |= rt_flash_load (key,
                                    & (sensor->configuration),
                                    sizeof (sensor->configuration));
     }

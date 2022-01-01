@@ -836,7 +836,7 @@ static rd_status_t rawToC (const uint8_t * const raw_temperature,
  * parameter acceleration: Output. Acceleration values in mg
  *
  */
-static rd_status_t rawToMg (const axis3bit16_t * raw_acceleration,
+rd_status_t rawToMg (const axis3bit16_t * raw_acceleration,
                             float * acceleration)
 {
     rd_status_t err_code = RD_SUCCESS;

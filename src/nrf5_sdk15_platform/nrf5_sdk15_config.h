@@ -9,7 +9,6 @@
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_gpio_interrupt.h"    //!< Check if NRFX GPIOTE is required
 #include "ruuvi_interface_gpio_pwm.h"
-#include "ruuvi_interface_flash.h"             //!< Check if FDS is required
 #include "ruuvi_interface_i2c.h"               //!< Check if TWI is required.
 #include "ruuvi_interface_log.h"               //!< Check if NRF_LOG is required
 #include "ruuvi_interface_power.h"             //!< Check if POWER is required
@@ -94,7 +93,7 @@
 #   define NRF_BLE_GATT_ENABLED (1U)
 #   define NRF_BLE_QWR_ENABLED  (1U)
 #   define NRF_BLE_CONN_PARAMS_ENABLED (1U)
-#   define PEER_MANAGER_ENABLED (1U)
+#   define PEER_MANAGER_ENABLED (0U)
 #   define NRF_SDH_BLE_PERIPHERAL_LINK_COUNT (1U) //!< Only 1 allowed in SDK15
 #   define NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION (1U) //!< Larger deviation will be renegotiated.
 #   define NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION (100U) //!< 10 ms units, 1 s deviation allowed
@@ -135,12 +134,6 @@
 #define PWM_DEFAULT_CONFIG_TOP_VALUE 1000
 #define PWM_DEFAULT_CONFIG_LOAD_MODE 2
 #define PWM_DEFAULT_CONFIG_STEP_MODE 0
-#endif
-
-#if RUUVI_NRF5_SDK15_FLASH_ENABLED
-#   define FDS_ENABLED 1
-#   define NRF_FSTORAGE_ENABLED 1
-#   define FDS_VIRTUAL_PAGES (RI_FLASH_PAGES + 1U) // +1 page for FDS GC.
 #endif
 
 #if RUUVI_NRF5_SDK15_I2C_ENABLED

@@ -19,15 +19,14 @@
  * These are in addition to flash utility functions of load, free, is busy and gc_run(which yields until not busy)
  */
 
-#include "ruuvi_driver_enabled_modules.h"
-#if RT_FLASH_ENABLED
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
-#include "ruuvi_interface_flash.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_power.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_flash.h"
+#include "flashdb.h"
+#include "ruuvi_task_flashdb.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -38,18 +37,40 @@
 #define TASK_FLASH_LOG_LEVEL RI_LOG_LEVEL_INFO
 #endif
 
-#ifndef RT_FLASH_ERROR_FILE
-#  define RT_FLASH_ERROR_FILE 0xBFFE
+#if RI_LOG_ENABLED
+#include <stdio.h>
+#include <stdarg.h>
+
+static inline void LOG (const char * const msg)
+{
+    ri_log (RI_LOG_LEVEL_INFO, msg);
+}
+
+static inline void LOGD (const char * const msg)
+{
+    ri_log (RI_LOG_LEVEL_DEBUG, msg);
+}
+
+static inline void LOGDf (const char * const msg, ...)
+{
+    char fmsg[RD_LOG_BUFFER_SIZE];
+    va_list args;
+    *fmsg = 0;
+    va_start(args, msg);
+    vsnprintf(fmsg, RD_LOG_BUFFER_SIZE, msg, args);
+    va_end(args);
+    ri_log (RI_LOG_LEVEL_DEBUG, fmsg);
+}
+#else
+#define LOG(...) 
+#define LOGD(...)
+#define LOGDf(...)
+#define snprintf(...)
 #endif
 
-#ifndef RT_FLASH_ERROR_RECORD
-#  define RT_FLASH_ERROR_RECORD 0xBFFE
-#endif
+/* KVDB object */
+static struct fdb_kvdb kvdb = { 0 };
 
-#define LOG(msg) ri_log(TASK_FLASH_LOG_LEVEL, msg)
-#define LOGD(msg) ri_log(RI_LOG_DEBUG, msg)
-#define LOGW(msg) ri_log(RI_LOG_WARNING, msg)
-#define LOGHEX(msg, len) ri_log_hex(TASK_FLASH_LOG_LEVEL, msg, len)
 
 typedef struct
 {
@@ -100,115 +121,80 @@ static
 #endif
 void print_error_cause (void)
 {
-    rt_flash_error_cause_t error;
-    rd_status_t err_code;
-    err_code = rt_flash_load (RT_FLASH_ERROR_FILE,
-                              RT_FLASH_ERROR_RECORD,
-                              &error, sizeof (error));
 
-    if (RD_SUCCESS == err_code)
-    {
-        char error_str[128];
-        size_t index = 0;
-        index += snprintf (error_str, sizeof (error_str), "Previous fatal error: %s:%d: ",
-                           error.filename, error.line);
-        index += ri_error_to_string (error.error, error_str + index,
-                                     sizeof (error_str) - index);
-        snprintf (error_str + index,  sizeof (error_str) - index, "\r\n");
-        LOG (error_str);
-    }
 }
 
 rd_status_t rt_flash_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= ri_flash_init();
 
-    // Error on flash? purge, reboot
-    if (RD_SUCCESS != err_code)
-    {
-        ri_flash_purge();
-        ri_power_reset();
-        // Stop test execution here.
-#       ifdef CEEDLING
-        return err_code;
-#       endif
+    // Init FlashDB, which causes initialization of Macronix driver and SPI bus
+    fal_flash_init();
+
+    rt_macronix_high_performance_switch(true);
+    fdb_err_t result = fdb_kvdb_init(&kvdb, "environment", "env_kvdb", NULL, NULL);
+    rt_macronix_high_performance_switch(false);
+
+    if(result!=FDB_NO_ERR) {
+      err_code = rt_flashdb_to_ruuvi_error(result);
     }
 
-    // Print previous fatal error
-    print_error_cause();
+    fdb_kv_print(&kvdb);
+
     return err_code;
 }
 
-rd_status_t rt_flash_store (const uint16_t page_id, const uint16_t record_id,
+rd_status_t rt_flash_store (const char * const key,
                             const void * const message, const size_t message_length)
 {
-    rd_status_t status = RD_SUCCESS;
-    status = ri_flash_record_set (page_id, record_id, message_length, message);
+    rd_status_t err_code = RD_SUCCESS;
+    struct fdb_blob blob;
 
-    if (RD_ERROR_NO_MEM == status)
-    {
-        ri_flash_gc_run();
+    LOGDf("Save %s size %d\r\n", key, message_length);
 
-        while (rt_flash_busy())
-        {
-            ri_yield();
-        }
+    fdb_err_t result = fdb_kv_set_blob(&kvdb, key, fdb_blob_make(&blob, message, message_length));
 
-        status = ri_flash_record_set (page_id, record_id, message_length, message);
+    if(result!=FDB_NO_ERR) {
+      err_code = rt_flashdb_to_ruuvi_error(result);
     }
 
-    return status;
+    return err_code;
 }
 
-rd_status_t rt_flash_load (const uint16_t page_id, const uint16_t record_id,
+rd_status_t rt_flash_load (const char * const key,
                            void * const message, const size_t message_length)
 {
-    return ri_flash_record_get (page_id, record_id, message_length, message);
+    rd_status_t err_code = RD_SUCCESS;
+    struct fdb_blob blob;
+
+    LOGDf("Load %s size %d\r\n", key, message_length);
+
+    size_t size = fdb_kv_get_blob(&kvdb, key, fdb_blob_make(&blob, message, message_length));
+
+    if(size==0) {
+      LOGDf("%s NOT FOUND\r\n", key);
+      return RD_ERROR_NOT_FOUND;
+    }
+
+    if(blob.saved.len!=message_length) {
+      err_code = RD_ERROR_DATA_SIZE;
+    }
+
+    return err_code;
 }
 
-rd_status_t rt_flash_free (const uint16_t file_id, const uint16_t record_id)
+rd_status_t rt_flash_free (const char * const key)
 {
-    return ri_flash_record_delete (file_id, record_id);
+    rd_status_t err_code = RD_SUCCESS;
+    fdb_err_t result = fdb_kv_del(&kvdb, key);
+
+    LOGDf("Delete %s size %d\r\n", key);
+
+    if(result!=FDB_NO_ERR) {
+      err_code = rt_flashdb_to_ruuvi_error(result);
+    }
+
+    return err_code;
 }
 
-rd_status_t rt_flash_gc_run (void)
-{
-    return ri_flash_gc_run();
-}
-
-bool rt_flash_busy (void)
-{
-    return ri_flash_is_busy();
-}
-
-
-
-#else
-
-#include "ruuvi_driver_error.h"
-#include <stdlib.h>
-rd_status_t rt_flash_init (void)
-{
-    // Setup error reset
-    return RD_SUCCESS;
-}
-
-rd_status_t rt_flash_store (const uint16_t file_id, const uint16_t record_id,
-                            const void * const message, const size_t message_length)
-{
-    return RD_SUCCESS;
-}
-
-rd_status_t rt_flash_load (const uint16_t page_id, const uint16_t record_id,
-                           void * const message, const size_t message_length)
-{
-    return RD_ERROR_NOT_FOUND;
-}
-
-bool rt_flash_busy (void)
-{
-    return false;
-}
-#endif
 /*@}*/
