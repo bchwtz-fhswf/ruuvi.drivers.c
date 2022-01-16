@@ -764,6 +764,7 @@ rd_status_t ri_gatt_dis_init (const ri_comm_dis_init_t * const p_dis)
     ble_srv_ascii_to_utf8 (&dis_init.serial_num_str, dis_local.deviceid);
     ble_srv_ascii_to_utf8 (&dis_init.hw_rev_str, dis_local.hw_version);
     ble_srv_ascii_to_utf8 (&dis_init.fw_rev_str, dis_local.fw_version);
+    ble_srv_ascii_to_utf8 (&dis_init.sw_rev_str, BUILDNUMBER);
     // Read security level 1, mode 1. OPEN, i.e. anyone can read without encryption.
     // Write not allowed.
     dis_init.dis_char_rd_sec = SEC_OPEN;
