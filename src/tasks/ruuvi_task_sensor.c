@@ -33,8 +33,14 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
     ri_log_hex (TASK_SENSOR_LOG_LEVEL, msg, len);
 }
 
-/* KVDB object */
-static struct fdb_kvdb kvdb = {0};
+static fdb_kvdb *kvdb = NULL;
+
+/* Singleton for global kvdb conn */
+fdb_kvdb * get_kvdb_conn() {
+    if (*kvdb == NULL)
+        *kvdb = malloc(sizeof(struct fdb_kvdb));
+    return *kvdb;
+}
 
 /* Key-Value database initialization
 *

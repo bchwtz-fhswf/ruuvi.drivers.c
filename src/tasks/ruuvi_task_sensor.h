@@ -34,6 +34,15 @@ typedef struct
 
 /** @brief Initialize sensor CTX
  *
+ * To interact with the flashdb provided by the sensor, a connection needs to be fetched.
+ * This function holds the global connection and acts as a singleton.
+ *
+ * @return fdb_kvdb * as singleton
+ */
+fdb_kvdb * get_kvdb_conn() {
+
+/** @brief Initialize sensor CTX
+ *
  * To initialize a sensor, initialization function, sensor bus and sensor handle must
  * be set. After initialization, sensor control structure is ready to use,
  * initial configuration is set to actual values on sensor.
