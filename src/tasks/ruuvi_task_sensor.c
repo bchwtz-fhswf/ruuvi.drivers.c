@@ -51,6 +51,7 @@ fdb_kvdb * get_kvdb_conn() {
 *        NULL: The user data if you need, now is empty.
 */
 rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
+    fdb_kvdb * kvdb = get_kvdb_conn();
     struct fdb_blob blob;
     uint8_t sensor_config_fdb_enabled = 0;
 
@@ -66,13 +67,13 @@ rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
     strcpy(partition_name, "sensor_");
     strcat(partition_name, sensor->sensor.name);
     strcat(partition_name, "_config");
-    fdb_err_t result = fdb_kvdb_init(&kvdb, "env", partition_name, &default_kv, NULL);
+    fdb_err_t result = fdb_kvdb_init(kvdb, "env", partition_name, &default_kv, NULL);
     rt_macronix_high_performance_switch(false); //resetting high-power mode in case of factory reset
     free(partition_name);
     if (result == FDB_NO_ERR)
     {
 
-        fdb_kv_get_blob(&kvdb, "sensor_config_fdb_enabled", fdb_blob_make(&blob, &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)));
+        fdb_kv_get_blob(kvdb, "sensor_config_fdb_enabled", fdb_blob_make(&blob, &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)));
         if (blob.saved.len > 0 && sensor_config_fdb_enabled)
         {
             // activate logging
