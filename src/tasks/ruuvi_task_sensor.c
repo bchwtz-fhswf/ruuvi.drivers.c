@@ -33,15 +33,6 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
     ri_log_hex (TASK_SENSOR_LOG_LEVEL, msg, len);
 }
 
-static fdb_kvdb *kvdb = NULL;
-
-/* Singleton for global kvdb conn */
-fdb_kvdb * get_kvdb_conn() {
-    if (!kvdb)
-        kvdb = malloc(sizeof(struct fdb_kvdb));
-    return kvdb;
-}
-
 /* Key-Value database initialization
 *
 *       &kvdb: database object
@@ -72,7 +63,6 @@ rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
     free(partition_name);
     if (result == FDB_NO_ERR)
     {
-
         fdb_kv_get_blob(kvdb, "sensor_config_fdb_enabled", fdb_blob_make(&blob, &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)));
         if (blob.saved.len > 0 && sensor_config_fdb_enabled)
         {

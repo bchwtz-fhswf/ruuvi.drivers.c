@@ -33,16 +33,6 @@ typedef struct
     ri_gpio_id_t level_pin;                   //!< Level interrupt.
 } rt_sensor_ctx_t;
 
-typedef struct fdb_kvdb fdb_kvdb;
-/** @brief Initialize sensor db
- *
- * To interact with the flashdb provided by the sensor, a connection needs to be fetched.
- * This function holds the global connection and acts as a singleton.
- *
- * @return fdb_kvdb * as singleton
- */
-fdb_kvdb * get_kvdb_conn();
-
 /** @brief Initialize sensor CTX
  *
  * To initialize a sensor, initialization function, sensor bus and sensor handle must
