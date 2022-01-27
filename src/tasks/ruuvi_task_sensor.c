@@ -37,9 +37,9 @@ static fdb_kvdb *kvdb = NULL;
 
 /* Singleton for global kvdb conn */
 fdb_kvdb * get_kvdb_conn() {
-    if (*kvdb == NULL)
-        *kvdb = malloc(sizeof(struct fdb_kvdb));
-    return *kvdb;
+    if (!kvdb)
+        kvdb = malloc(sizeof(struct fdb_kvdb));
+    return kvdb;
 }
 
 /* Key-Value database initialization

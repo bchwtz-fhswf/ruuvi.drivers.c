@@ -16,6 +16,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_gpio.h"
+#include "ruuvi_task_flashdb.h"
 
 typedef struct
 {
@@ -32,14 +33,15 @@ typedef struct
     ri_gpio_id_t level_pin;                   //!< Level interrupt.
 } rt_sensor_ctx_t;
 
-/** @brief Initialize sensor CTX
+typedef struct fdb_kvdb fdb_kvdb;
+/** @brief Initialize sensor db
  *
  * To interact with the flashdb provided by the sensor, a connection needs to be fetched.
  * This function holds the global connection and acts as a singleton.
  *
  * @return fdb_kvdb * as singleton
  */
-fdb_kvdb * get_kvdb_conn() {
+fdb_kvdb * get_kvdb_conn();
 
 /** @brief Initialize sensor CTX
  *
