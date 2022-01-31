@@ -42,10 +42,13 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 *        NULL: The user data if you need, now is empty.
 */
 rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
-    fdb_kvdb * kvdb = get_kvdb_conn();
+    fdb_kvdb * kvdb = NULL;
+    kvdb = get_kvdb_conn();
     struct fdb_blob blob;
-    uint8_t sensor_config_fdb_enabled = 0;
-
+    uint8_t sensor_config_fdb_enabled = 1;
+    if (sensor_config_fdb_enabled == 0 || !kvdb) {
+        return RD_SUCCESS;
+    }
     /* default KV nodes */
     struct fdb_default_kv_node default_kv_table[] = {
         {"sensor_config_fdb_enabled", &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)}};
@@ -58,25 +61,22 @@ rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
     strcpy(partition_name, "sensor_");
     strcat(partition_name, sensor->sensor.name);
     strcat(partition_name, "_config");
-    fdb_err_t result = fdb_kvdb_init(kvdb, "env", partition_name, &default_kv, NULL);
+    fdb_err_t result = fdb_kvdb_init(&kvdb, "env", partition_name, &default_kv, NULL);
     rt_macronix_high_performance_switch(false); //resetting high-power mode in case of factory reset
     free(partition_name);
-    if (result == FDB_NO_ERR)
-    {
-        fdb_kv_get_blob(kvdb, "sensor_config_fdb_enabled", fdb_blob_make(&blob, &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)));
-        if (blob.saved.len > 0 && sensor_config_fdb_enabled)
-        {
-            // activate logging
-            // return app_enable_sensor_logging(NULL, false);
-            return RD_SUCCESS;
-        }
-        else
-        {
-        // but return RD_SUCCESS
-        return RD_SUCCESS;
-        }
-    }
-    return RD_ERROR_FATAL;
+    // if (result == FDB_NO_ERR)
+    // {
+    //     fdb_kv_get_blob(kvdb, "sensor_config_fdb_enabled", fdb_blob_make(&blob, &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)));
+    //     if (blob.saved.len > 0 && sensor_config_fdb_enabled)
+    //     {
+    //         // activate logging
+    //         // return app_enable_sensor_logging(NULL, false);
+    //         return RD_SUCCESS;
+    //     }
+    //     // but return RD_SUCCESS
+    //     return RD_SUCCESS;
+    // }
+    return RD_SUCCESS;
 }
 
 /** @brief Initialize sensor CTX

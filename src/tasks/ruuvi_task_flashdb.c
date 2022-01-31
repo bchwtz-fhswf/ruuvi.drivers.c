@@ -19,6 +19,8 @@ static fdb_kvdb *kvdb = NULL;
 fdb_kvdb * get_kvdb_conn() {
     if (!kvdb)
         kvdb = malloc(sizeof(struct fdb_kvdb));
+        fdb_kvdb kvdb_local = {0};
+        kvdb = &kvdb_local;
     return kvdb;
 }
 
