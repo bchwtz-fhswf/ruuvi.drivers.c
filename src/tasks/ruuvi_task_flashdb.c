@@ -98,8 +98,10 @@ rd_status_t rt_macronix_flash_exists(void) {
 
       if(manufacturer_id==0xc2 && device_id==0x17) {      
         is_macronix_present = RD_SUCCESS;
+        LOG("Running on sensor with existing Macronix flash.\r\n");
       } else {
         is_macronix_present = RD_ERROR_NOT_FOUND;
+        LOG("Running on sensor without Macronix flash. All persistence disabled.\r\n");
       }
     }
   }
