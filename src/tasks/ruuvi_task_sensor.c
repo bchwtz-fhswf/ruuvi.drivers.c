@@ -45,7 +45,7 @@ rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
     fdb_kvdb * kvdb = NULL;
     kvdb = get_kvdb_conn();
     struct fdb_blob blob;
-    uint8_t sensor_config_fdb_enabled = 0;
+    uint8_t sensor_config_fdb_enabled = 1;
     if (sensor_config_fdb_enabled == 0 || !kvdb) {
         return RD_SUCCESS;
     }
@@ -56,14 +56,19 @@ rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
     struct fdb_default_kv default_kv;
     default_kv.kvs = default_kv_table;
 
-    char* partition_name;
-    partition_name = malloc(strlen("sensor_")+strlen(sensor->sensor.name)+strlen("_config"));
-    strcpy(partition_name, "sensor_");
-    strcat(partition_name, sensor->sensor.name);
-    strcat(partition_name, "_config");
-    fdb_err_t result = fdb_kvdb_init(&kvdb, "env", partition_name, &default_kv, NULL);
+    char *partition;
+
+    if (rt_macronix_flash_exists() == RD_SUCCESS)
+    {
+      partition = "fdb_kvdb2";
+    }
+    else
+    {
+      partition = "fdb_kvdb1";
+    }
+    fdb_err_t result = fdb_kvdb_init(kvdb, "env", partition, &default_kv, NULL);
     rt_macronix_high_performance_switch(false); //resetting high-power mode in case of factory reset
-    free(partition_name);
+    
     if (result == FDB_NO_ERR)
     {
         fdb_kv_get_blob(kvdb, "sensor_config_fdb_enabled", fdb_blob_make(&blob, &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)));
