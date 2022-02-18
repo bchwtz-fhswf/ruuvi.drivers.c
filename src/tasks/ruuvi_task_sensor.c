@@ -292,6 +292,8 @@ rd_status_t rt_sensor_store_to_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
   struct fdb_blob blob_mode;
   struct fdb_blob blob_created_at;
   struct fdb_blob blob_divider;
+// set the new created_at date
+  sensor->configuration.created_at = rd_sensor_timestamp_get();
   { /* GET the KV value */
     /* get the "boot_count" KV value */
     fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_samplerate"), fdb_blob_make(&blob_samplerate, &sensor->configuration.samplerate, sizeof(sensor->configuration.samplerate)));
@@ -333,7 +335,7 @@ rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
   }
   else
   {
-    // shitfix to make sure initializing the values will work - do not try this at home
+    // make sure initializing the values will work - do not try this at home ;-)
     rt_sensor_store_to_fdb(kvdb, sensor);
     printf("get of some values of the sensor failed\n");
     return RD_ERROR_NOT_FOUND;
