@@ -284,26 +284,13 @@ rt_sensor_ctx_t * rt_sensor_find_provider (rt_sensor_ctx_t * const
 
 rd_status_t rt_sensor_store_to_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
 {
-  struct fdb_blob blob_samplerate;
-  struct fdb_blob blob_resolution;
-  struct fdb_blob blob_scale;
-  struct fdb_blob blob_dsp_function;
-  struct fdb_blob blob_dsp_parameter;
-  struct fdb_blob blob_mode;
-  struct fdb_blob blob_created_at;
-  struct fdb_blob blob_divider;
+  struct fdb_blob blob;
+
 // set the new created_at date
   sensor->configuration.created_at = rd_sensor_timestamp_get();
   { /* GET the KV value */
     /* get the "boot_count" KV value */
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_samplerate"), fdb_blob_make(&blob_samplerate, &sensor->configuration.samplerate, sizeof(sensor->configuration.samplerate)));
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_resolution"), fdb_blob_make(&blob_resolution, &sensor->configuration.resolution, sizeof(sensor->configuration.resolution)));
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_scale"), fdb_blob_make(&blob_scale, &sensor->configuration.scale, sizeof(sensor->configuration.scale)));
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_dsp_function"), fdb_blob_make(&blob_dsp_function, &sensor->configuration.dsp_function, sizeof(sensor->configuration.dsp_function)));
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_dsp_parameter"), fdb_blob_make(&blob_dsp_parameter, &sensor->configuration.dsp_parameter, sizeof(sensor->configuration.dsp_parameter)));
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_mode"), fdb_blob_make(&blob_mode, &sensor->configuration.mode, sizeof(sensor->configuration.mode)));
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_created_at"), fdb_blob_make(&blob_created_at, &sensor->configuration.created_at, sizeof(sensor->configuration.created_at)));
-    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config_reserved1"), fdb_blob_make(&blob_divider, &sensor->configuration.divider, sizeof(sensor->configuration.divider)));
+    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config"), fdb_blob_make(&blob, &sensor->configuration, sizeof(sensor->configuration)));
   }
   return RD_SUCCESS;
 }
@@ -311,24 +298,10 @@ rd_status_t rt_sensor_store_to_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
 rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
 {
 
-  struct fdb_blob blob_samplerate;
-  struct fdb_blob blob_resolution;
-  struct fdb_blob blob_scale;
-  struct fdb_blob blob_dsp_function;
-  struct fdb_blob blob_dsp_parameter;
-  struct fdb_blob blob_mode;
-  struct fdb_blob blob_created_at;
-  struct fdb_blob blob_divider;
+  struct fdb_blob blob;
 
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_samplerate"), fdb_blob_make(&blob_samplerate, &sensor->configuration.samplerate, sizeof(sensor->configuration.samplerate)));
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_resolution"), fdb_blob_make(&blob_resolution, &sensor->configuration.resolution, sizeof(sensor->configuration.resolution)));
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_scale"), fdb_blob_make(&blob_scale, &sensor->configuration.scale, sizeof(sensor->configuration.scale)));
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_dsp_function"), fdb_blob_make(&blob_dsp_function, &sensor->configuration.dsp_function, sizeof(sensor->configuration.dsp_function)));
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_dsp_parameter"), fdb_blob_make(&blob_dsp_parameter, &sensor->configuration.dsp_parameter, sizeof(sensor->configuration.dsp_parameter)));
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_mode"), fdb_blob_make(&blob_mode, &sensor->configuration.mode, sizeof(sensor->configuration.mode)));
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_created_at"), fdb_blob_make(&blob_created_at, &sensor->configuration.created_at, sizeof(sensor->configuration.created_at)));
-    fdb_kv_get_blob(kvdb, *strcat(sensor->sensor.name, "_config_reserved1"), fdb_blob_make(&blob_divider, &sensor->configuration.divider, sizeof(sensor->configuration.divider)));  /* the blob.saved.len is more than 0 when get the value successful */
-  if (blob_samplerate.saved.len > 0)
+    fdb_kv_get_blob(kvdb, strcat(sensor->sensor.name, "_config"), fdb_blob_make(&blob, &sensor->configuration, sizeof(sensor->configuration)));
+  if (blob.saved.len > 0)
   {
     // printf("get the '' value is %d\n", boot_count);
     return RD_SUCCESS;
