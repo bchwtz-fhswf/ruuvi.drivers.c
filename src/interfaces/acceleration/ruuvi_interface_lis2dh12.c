@@ -990,6 +990,8 @@ rd_status_t ri_lis2dh12_data_get (rd_sensor_data_t * const
     if (NULL == data) { return RD_ERROR_NULL; }
 
     rd_status_t err_code = RD_SUCCESS;
+    int32_t lis_ret_code;
+
     axis3bit16_t raw_acceleration;
     uint8_t raw_temperature[2];
     memset (raw_acceleration.u8bit, 0x00, 3 * sizeof (int16_t));
