@@ -5,8 +5,14 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_task_flash.h"
 #include "ruuvi_task_sensor.h"
+#include "flashdb.h"
+#include "macronix_flash.h"
+#include "ruuvi_task_flashdb.h"
+
 
 #include <string.h>
+#include<stdio.h>
+#include<stdlib.h>
 
 #ifndef TASK_SENSOR_LOG_LEVEL
 #define TASK_SENSOR_LOG_LEVEL RI_LOG_LEVEL_DEBUG
@@ -25,6 +31,57 @@ static inline void LOGD (const char * const msg)
 static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 {
     ri_log_hex (TASK_SENSOR_LOG_LEVEL, msg, len);
+}
+
+/* Key-Value database initialization
+*
+*       &kvdb: database object
+*       "env": database name
+*   partition: The flash partition name base on FAL. Please make sure it's in FAL partition table.
+* &default_kv: The default KV nodes. It will auto add to KVDB when first initialize successfully.
+*        NULL: The user data if you need, now is empty.
+*/
+rd_status_t init_fdb(rt_sensor_ctx_t * const sensor) {
+    fdb_kvdb * kvdb = NULL;
+    kvdb = get_kvdb_conn();
+    struct fdb_blob blob;
+    uint8_t sensor_config_fdb_enabled = 1;
+    if (sensor_config_fdb_enabled == 0 || !kvdb) {
+        return RD_SUCCESS;
+    }
+    /* default KV nodes */
+    struct fdb_default_kv_node default_kv_table[] = {
+        {"sensor_config_fdb_enabled", &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)}};
+
+    struct fdb_default_kv default_kv;
+    default_kv.kvs = default_kv_table;
+
+    char *partition;
+
+    if (rt_macronix_flash_exists() == RD_SUCCESS)
+    {
+      partition = "fdb_kvdb2";
+    }
+    else
+    {
+      partition = "fdb_kvdb1";
+    }
+    fdb_err_t result = fdb_kvdb_init(kvdb, "env", partition, &default_kv, NULL);
+    rt_macronix_high_performance_switch(false); //resetting high-power mode in case of factory reset
+    
+    if (result == FDB_NO_ERR)
+    {
+        fdb_kv_get_blob(kvdb, "sensor_config_fdb_enabled", fdb_blob_make(&blob, &sensor_config_fdb_enabled, sizeof(sensor_config_fdb_enabled)));
+        if (blob.saved.len > 0 && sensor_config_fdb_enabled)
+        {
+            // activate logging
+            // return app_enable_sensor_logging(NULL, false);
+            return RD_SUCCESS;
+        }
+        // but return RD_SUCCESS
+        return RD_SUCCESS;
+    }
+    return RD_ERROR_NOT_INITIALIZED;
 }
 
 /** @brief Initialize sensor CTX
@@ -59,6 +116,7 @@ rd_status_t rt_sensor_initialize (rt_sensor_ctx_t * const sensor)
     {
         err_code |= RD_ERROR_NOT_FOUND;
     }
+    err_code |= init_fdb(sensor);
 
     return err_code;
 }
@@ -85,9 +143,10 @@ rd_status_t rt_sensor_store (rt_sensor_ctx_t * const sensor)
     }
     else
     {
-        err_code |= rt_flash_store (sensor->nvm_file, sensor->nvm_record,
-                                    & (sensor->configuration),
-                                    sizeof (sensor->configuration));
+        // err_code |= rt_flash_store (sensor->nvm_file, sensor->nvm_record,
+                                    // & (sensor->configuration),
+                                    // sizeof (sensor->configuration));
+        err_code |= rt_sensor_store_to_fdb(get_kvdb_conn(), sensor);
     }
 
     return err_code;
@@ -115,9 +174,11 @@ rd_status_t rt_sensor_load (rt_sensor_ctx_t * const sensor)
     }
     else
     {
-        err_code |= rt_flash_load (sensor->nvm_file, sensor->nvm_record,
-                                   & (sensor->configuration),
-                                   sizeof (sensor->configuration));
+        // TODO: have to set fdb config before this point
+        // err_code |= rt_flash_load (sensor->nvm_file, sensor->nvm_record,
+                                //    & (sensor->configuration),
+                                //    sizeof (sensor->configuration));
+        err_code |= rt_sensor_get_from_fdb(get_kvdb_conn(), sensor);
     }
 
     return err_code;
@@ -219,5 +280,38 @@ rt_sensor_ctx_t * rt_sensor_find_provider (rt_sensor_ctx_t * const
     }
 
     return p_sensor;
+}
+
+rd_status_t rt_sensor_store_to_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
+{
+  struct fdb_blob blob;
+
+// set the new created_at date
+  sensor->configuration.created_at = rd_sensor_timestamp_get();
+  { /* GET the KV value */
+    /* get the "boot_count" KV value */
+    fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config"), fdb_blob_make(&blob, &sensor->configuration, sizeof(sensor->configuration)));
+  }
+  return RD_SUCCESS;
+}
+
+rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
+{
+
+  struct fdb_blob blob;
+
+    fdb_kv_get_blob(kvdb, strcat(sensor->sensor.name, "_config"), fdb_blob_make(&blob, &sensor->configuration, sizeof(sensor->configuration)));
+  if (blob.saved.len > 0)
+  {
+    // printf("get the '' value is %d\n", boot_count);
+    return RD_SUCCESS;
+  }
+  else
+  {
+    // make sure initializing the values will work - do not try this at home ;-)
+    rt_sensor_store_to_fdb(kvdb, sensor);
+    printf("get of some values of the sensor failed\n");
+    return RD_ERROR_NOT_FOUND;
+  }
 }
 #endif

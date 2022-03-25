@@ -16,6 +16,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_gpio.h"
+#include "ruuvi_task_flashdb.h"
 
 typedef struct
 {
@@ -106,6 +107,11 @@ rt_sensor_ctx_t * rt_sensor_find_backend (rt_sensor_ctx_t * const
  */
 rt_sensor_ctx_t * rt_sensor_find_provider (rt_sensor_ctx_t * const
         sensor_list, const size_t count, rd_sensor_data_fields_t values);
+
+
+rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor);
+
+rd_status_t rt_sensor_store_to_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor);
 
 /*@}*/
 #endif

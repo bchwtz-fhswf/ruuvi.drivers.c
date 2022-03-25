@@ -13,6 +13,16 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+static fdb_kvdb *kvdb = NULL;
+
+/* Singleton for global kvdb conn */
+fdb_kvdb * get_kvdb_conn() {
+    if (!kvdb)
+        kvdb = malloc(sizeof(struct fdb_kvdb));
+        memset(kvdb, 0, sizeof(struct fdb_kvdb));
+    return kvdb;
+}
+
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
