@@ -5,6 +5,8 @@
 #include "flashdb.h"
 
 typedef struct fdb_kvdb fdb_kvdb;
+typedef struct fb_tsdb fdb_tsdb;
+
 /** @brief Initialize sensor db
  *
  * To interact with the flashdb provided by the sensor, a connection needs to be fetched.
@@ -13,6 +15,15 @@ typedef struct fdb_kvdb fdb_kvdb;
  * @return fdb_kvdb * as singleton
  */
 fdb_kvdb * get_kvdb_conn();
+
+/** @brief Initialize sensor db
+ *
+ * To interact with the flashdb provided by the sensor, a connection needs to be fetched.
+ * This function holds the global connection and acts as a singleton.
+ *
+ * @return fdb_kvdb * as singleton
+ */
+fdb_tsdb * get_tsdb_conn();
 
 /*
  *  This function converts an error code of FlashDB to an Ruuvi error code.

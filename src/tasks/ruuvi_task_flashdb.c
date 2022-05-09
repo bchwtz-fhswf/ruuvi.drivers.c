@@ -14,13 +14,22 @@
 #include <stdarg.h>
 
 static fdb_kvdb *kvdb = NULL;
+static fdb_tsdb *tsdb = NULL;
 
 /* Singleton for global kvdb conn */
 fdb_kvdb * get_kvdb_conn() {
-    if (!kvdb)
+    if (!kvdb) {
         kvdb = malloc(sizeof(struct fdb_kvdb));
         memset(kvdb, 0, sizeof(struct fdb_kvdb));
+    }
     return kvdb;
+}
+
+fdb_tsdb * get_tsdb_conn() {
+  if(!tsdb) {
+    tsdb = malloc(sizeof(struct fdb_tsdb));
+    memset(tsdb, 0, sizeof(struct fdb_tsdb));
+  }
 }
 
 static inline void LOG (const char * const msg)
