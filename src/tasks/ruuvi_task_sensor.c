@@ -291,6 +291,8 @@ rd_status_t rt_sensor_store_to_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
   { /* GET the KV value */
     /* get the "boot_count" KV value */
     fdb_kv_set_blob(kvdb, strcat(sensor->sensor.name, "_config"), fdb_blob_make(&blob, &sensor->configuration, sizeof(sensor->configuration)));
+    fdb_kv_set_blob(kvdb, strcat(strcat(sensor->sensor.name, "_config_"), rd_sensor_timestamp_get()), fdb_blob_make(&blob, &sensor->configuration, sizeof(sensor->configuration)));
+
   }
   return RD_SUCCESS;
 }
