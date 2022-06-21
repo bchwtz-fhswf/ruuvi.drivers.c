@@ -45,6 +45,7 @@
 void access_flash(void);
 
 rd_status_t mx_init(void);
+rd_status_t mx_uninit(void);
 
 rd_status_t mx_read_rems(uint8_t * manufacturer_id, uint8_t * device_id);
 

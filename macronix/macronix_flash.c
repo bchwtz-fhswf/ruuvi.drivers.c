@@ -70,6 +70,16 @@ rd_status_t mx_init(void) {
   return (err_code);
 }
 
+rd_status_t mx_uninit(void) {
+  //Return error if SPI is already init
+  if (!m_spi_init_done) {
+    return NRF_ERROR_INVALID_STATE;
+  }
+  m_spi_init_done = false;
+  nrf_drv_spi_uninit(&spi_macronix);
+  return RD_SUCCESS;
+}
+
 rd_status_t mx_read_rems(uint8_t *manufacturer_id, uint8_t *device_id) {
   rd_status_t err_code = RD_SUCCESS;
 

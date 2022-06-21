@@ -102,6 +102,7 @@ rd_status_t rt_macronix_flash_exists(void) {
       } else {
         is_macronix_present = RD_ERROR_NOT_FOUND;
         LOG("Running on sensor without Macronix flash. All persistence disabled.\r\n");
+        mx_uninit();
       }
     }
   }
