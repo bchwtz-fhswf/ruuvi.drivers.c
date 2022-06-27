@@ -328,7 +328,7 @@ rd_status_t rt_sensor_get_all_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
     fdb_kv_iterator_init(&iterator);
     int i = 0;
     rd_sensor_configuration_t *configuration;
-    while (fdb_kv_iterate(kvdb, &iterator)) {
+    do {
         configuration = malloc(sizeof(rd_sensor_configuration_t));
         memset(configuration, 0, sizeof(rd_sensor_configuration_t));
         cur_kv = &(iterator.curr_kv);
@@ -340,6 +340,7 @@ rd_status_t rt_sensor_get_all_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
         // free(data_buf);
         sensor->historical_configurations[i] = configuration;
         i++;
-    }
+    } while (fdb_kv_iterate(kvdb, &iterator));
+    return RD_SUCCESS;
 }
 #endif
