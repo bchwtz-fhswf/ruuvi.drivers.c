@@ -179,6 +179,8 @@ rd_status_t rt_sensor_load (rt_sensor_ctx_t * const sensor)
                                 //    & (sensor->configuration),
                                 //    sizeof (sensor->configuration));
         err_code |= rt_sensor_get_from_fdb(get_kvdb_conn(), sensor);
+        err_code |= rt_sensor_get_all_from_fdb(get_kvdb_conn(), sensor);
+
     }
 
     return err_code;
@@ -313,5 +315,31 @@ rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
     printf("get of some values of the sensor failed\n");
     return RD_ERROR_NOT_FOUND;
   }
+}
+
+
+rd_status_t rt_sensor_get_all_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
+{
+
+    struct fdb_kv_iterator iterator;
+    fdb_kv_t cur_kv;
+    struct fdb_blob blob;
+    size_t data_size;
+    fdb_kv_iterator_init(&iterator);
+    int i = 0;
+    rd_sensor_configuration_t *configuration;
+    while (fdb_kv_iterate(kvdb, &iterator)) {
+        configuration = malloc(sizeof(rd_sensor_configuration_t));
+        memset(configuration, 0, sizeof(rd_sensor_configuration_t));
+        cur_kv = &(iterator.curr_kv);
+        data_size = (size_t) cur_kv->value_len;
+        fdb_blob_read((fdb_db_t) kvdb, fdb_kv_to_blob(cur_kv, fdb_blob_make(&blob, configuration, data_size)));
+        /*
+         * balabala do what ever you like with blob...
+         */
+        // free(data_buf);
+        sensor->historical_configurations[i] = configuration;
+        i++;
+    }
 }
 #endif

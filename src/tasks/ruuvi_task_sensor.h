@@ -23,6 +23,7 @@ typedef struct
     rd_sensor_t sensor;                       //!< Control structure for sensor.
     rd_sensor_init_fp init;                   //!< Initialization function.
     rd_sensor_configuration_t configuration;  //!< Sensor configuration.
+    rd_sensor_configuration_t * historical_configurations[100];  //!< Sensor configuration.
     uint16_t nvm_file;                        //!< NVM file of configuration.
     uint16_t nvm_record;                      //!< NVM record of configuration.
     uint8_t  handle;                          //!< Handle of sensor.
@@ -32,6 +33,8 @@ typedef struct
     ri_gpio_id_t fifo_pin;                    //!< FIFO full interrupt.
     ri_gpio_id_t level_pin;                   //!< Level interrupt.
 } rt_sensor_ctx_t;
+
+rd_status_t rt_sensor_get_all_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor);
 
 /** @brief Initialize sensor CTX
  *
