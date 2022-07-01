@@ -327,10 +327,10 @@ rd_status_t rt_sensor_get_all_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
     size_t data_size;
     fdb_kv_iterator_init(&iterator);
     int i = 0;
-    rd_sensor_configuration_t *configuration;
     do {
-        configuration = malloc(sizeof(rd_sensor_configuration_t));
-        memset(configuration, 0, sizeof(rd_sensor_configuration_t));
+        rd_sensor_configuration_t *configuration;
+        // configuration = malloc(sizeof(rd_sensor_configuration_t));
+        // memset(configuration, 0, sizeof(rd_sensor_configuration_t));
         cur_kv = &(iterator.curr_kv);
         data_size = (size_t) cur_kv->value_len;
         fdb_blob_read((fdb_db_t) kvdb, fdb_kv_to_blob(cur_kv, fdb_blob_make(&blob, configuration, data_size)));
