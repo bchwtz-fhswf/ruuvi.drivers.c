@@ -299,7 +299,7 @@ rd_status_t rt_sensor_store_to_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
 
 rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
 {
-
+  init_fdb(sensor);
   struct fdb_blob blob;
 
     fdb_kv_get_blob(kvdb, strcat(sensor->sensor.name, "_config"), fdb_blob_make(&blob, &sensor->configuration, sizeof(sensor->configuration)));
@@ -310,9 +310,12 @@ rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
   }
   else
   {
+    rt_flash_load (sensor->nvm_file, sensor->nvm_record,
+                                    & (sensor->configuration),
+                                    sizeof (sensor->configuration));
     // make sure initializing the values will work - do not try this at home ;-)
-    rt_sensor_store_to_fdb(kvdb, sensor);
-    printf("get of some values of the sensor failed\n");
+    //rt_sensor_store_to_fdb(kvdb, sensor);
+    LOGD("get of some values of the sensor failed\n");
     return RD_ERROR_NOT_FOUND;
   }
 }
@@ -320,7 +323,7 @@ rd_status_t rt_sensor_get_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
 
 rd_status_t rt_sensor_get_all_from_fdb(fdb_kvdb_t kvdb, rt_sensor_ctx_t *sensor)
 {
-
+    init_fdb(sensor);
     struct fdb_kv_iterator iterator;
     fdb_kv_t cur_kv;
     struct fdb_blob blob;

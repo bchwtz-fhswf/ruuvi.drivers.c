@@ -395,12 +395,12 @@ static void ble_evt_handler (ble_evt_t const * p_ble_evt, void * p_context)
             break;
 
         case BLE_GATTS_EVT_HVN_TX_COMPLETE:
-            LOGD ("BLE Notification sent\r\n");
+            //LOGD ("BLE Notification sent\r\n");
             break;
 
         default:
             // No implementation needed.
-            LOGD ("BLE Unknown event\r\n");
+            //LOGD ("BLE Unknown event\r\n");
             break;
     }
 }
